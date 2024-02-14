@@ -9,6 +9,8 @@
 
 #define BOARDX 10
 #define BOARDY 10
+#define PLAYER1_ATTACK 1
+#define PLAYER2_ATTACK 2
 
 //A macro used in main to determine if you want to run
 //the tests or not. If you don't want to run your tests,
@@ -43,32 +45,74 @@ int main( int argc, char* const argv[] )
         return runCatchTests(argc, argv);
     }
 
-    //start working on other parts of your project here.
+    /* ======== start working on other parts of your project here. ======== */
 
-    using Cylink::Player;
-    using Cylink::VesselType;
+    //Create player resources.
+    Cylink::Player player1(BOARDX, BOARDY);
+    Cylink::Player player2(BOARDX, BOARDY);
 
-    /* Create players */
-    Player player1(BOARDX, BOARDY);
-    Player player2(BOARDX, BOARDY);
+    //Create vector of game vessels
+    std::vector<Cylink::Vessel::VType> vessels;
+    vessels.insert(vessels.end(), 1, Cylink::Vessel::VType::CARRIER);
+    vessels.insert(vessels.end(), 3, Cylink::Vessel::VType::CRUISER);
+    vessels.insert(vessels.end(), 3, Cylink::Vessel::VType::DESTROYER);
+    vessels.insert(vessels.end(), 2, Cylink::Vessel::VType::FRIGATE);
+    vessels.insert(vessels.end(), 2, Cylink::Vessel::VType::SUBMARINE);
 
-    /* Add vessels to each player1's board */
-    player1.addVessel(VesselType::CARRIER, 1);
-    player1.addVessel(VesselType::CRUISER, 3);
-    player1.addVessel(VesselType::DESTROYER, 3);
-    player1.addVessel(VesselType::FRIGATE, 2);
-    player1.addVessel(VesselType::SUBMARINE, 2);
+    //register vessels with players
+    int shipCount1 = player1.setupBoard(vessels);
+    int shipCount2 = player2.setupBoard(vessels);
 
-    /* Add vessels to each player2's board */
-    player2.addVessel(VesselType::CARRIER, 1);
-    player2.addVessel(VesselType::CRUISER, 3);
-    player2.addVessel(VesselType::DESTROYER, 3);
-    player2.addVessel(VesselType::FRIGATE, 2);
-    player2.addVessel(VesselType::SUBMARINE, 2);
+    //Verify that both players have same number of ships
+    if(shipCount1 == shipCount2)
+    {
+        /* Game starts with a random player then simulation continues */
+        int xCord, yCord;
+        int playerSelector = Cylink::GameBoard::randomNumber(1, 2, true);
+        bool gameOver = false;
+        do
+        {
+            switch(playerSelector)
+            {
+            /* Player 1 launches attack */
+            case PLAYER1_ATTACK:
+                //Get a fire position suggestion.
+                std::tie(xCord, yCord) = player1.suggestFirePosition();
 
+                //launch the attack.
+                player1.launchAttack(player2, xCord, yCord);
 
+                //determine if game is over because player2 is dead.
+                if(player2.hasVessels() == false)
+                {
+                    gameOver = true;
+                }
 
+                //toggle the player selector to the opponent.
+                playerSelector = PLAYER2_ATTACK;
+                break;
 
+            /* Player 2 launches attack */
+            case PLAYER2_ATTACK:
+                //Get a fire position suggestion.
+                std::tie(xCord, yCord) = player2.suggestFirePosition();
+
+                //launch the attack.
+                player2.launchAttack(player1, xCord, yCord);
+
+                //determine if game is over because player2 is dead.
+                if(player1.hasVessels() == false)
+                {
+                    gameOver = true;
+                }
+
+                //toggle the player selector to the opponent.
+                playerSelector = PLAYER1_ATTACK;
+                break;
+            };
+
+        } while (gameOver == false);
+    }
 
     return 0;
 }

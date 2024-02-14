@@ -11,31 +11,27 @@
 namespace Cylink
 {
     /**
-      @enum VesselType
-      Specify the types of possible vessels in the game.
-    */
-    enum class VesselType
-    {
-        GUNBOAT,
-        CRUISER,
-        FRIGATE,
-        DESTROYER,
-        SUBMARINE,
-        CARRIER
-    };
-
-    /**
-     Class represents the various ships used in the BattleShip game. 
-     The VesselType determines how large the ship is and how much damage it can take before sinking.
-     
-     TODO: 
-     Make various vessels have different attack strengths thereby inflicting more damage in a single shot?
-     Perhaps as it takes on damange the strength of attack is also weakened?
+     Class represents the various ships used in the HighSeas game. 
     */
     class Vessel
-    {       
+    { 
     public:
-        Vessel(VesselType vtype = VesselType::GUNBOAT);
+        /**
+         @enum VType
+         Specify the types of possible vessels in the game.
+        */
+        enum class VType
+        {
+            GUNBOAT,
+            CRUISER,
+            FRIGATE,
+            DESTROYER,
+            SUBMARINE,
+            CARRIER
+        };
+
+    public:
+        Vessel(VType vtype = VType::GUNBOAT);
         Vessel(const Vessel& other);
         ~Vessel();
         Vessel& operator =(const Vessel& other);
@@ -45,21 +41,22 @@ namespace Cylink
         //Constant functions
         int getLength() const;
         int getWidth() const;
-        int getDamageLevel(bool initFlag = false);
-        VesselType getType() const;
         std::pair<int, int> getDimensions() const;
 
+        int getDamageLevel(bool initFlag = false);
+        VType getType() const;
+
         //Static functions
-        static std::pair<int, int> getVesselDimensions(VesselType vtype);
-        static std::string formatVessel(VesselType vt, bool printLong = false);
+        static std::pair<int, int> vesselDimensions(VType vtype);
+        static std::string formatVessel(VType vt, bool printLong = false);
 
         //friend declarations
         friend std::ostream& operator<<(std::ostream& os, const Vessel& vs);
-        friend std::ostream& operator<<(std::ostream& os, const VesselType& vt);
+        friend std::ostream& operator<<(std::ostream& os, const VType& vt);
         
     private:
-        VesselType vesselType_;     /**< Designates the type of vessel */
-        int damageLevel_;           /**< Tracks amount of damage vessel has taken. */
+        VType vesselType_;      /**< Designates the type of vessel */
+        int damageLevel_;       /**< Tracks amount of damage vessel has taken. */
     };
 }
 

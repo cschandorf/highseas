@@ -12,6 +12,9 @@
  */
 namespace Cylink
 {
+    /**
+     Models a player within the highseas game.
+    */
     class Player
     {
     public:
@@ -20,13 +23,17 @@ namespace Cylink
         ~Player();
 
         Player& operator = (const Player& other);
-
-        bool emplaceVessel(VesselType vtype, int xpos, int ypos, Orientation direction);
-        int addVessels(VesselType vtype, int count = 1);
+        int setupBoard(const std::vector<Vessel::VType>& vessels);
+        //GameBoard::StrikeResult launchAttack(Player& other, int xpos, int ypos);
+        void launchAttack(Player& other, int xCord, int yCord);
+        bool hasVessels();
+        std::pair<int, int> suggestFirePosition();
+    
+    private:
+        int receiveAttack(int xpos, int ypos);
 
     private:
-        GameBoard board_;   
-        std::vector<Vessel> ships_;     
+        GameBoard board_; 
     };
 }
 

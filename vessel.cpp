@@ -8,9 +8,9 @@ namespace Cylink
      Create a Vessel of the designated type and set the damage according to the type of vessel.
      The default type if not specified is a GUNBOAT.
      @param vtype
-        The type of vessel to create. By default this is a VesselType::GUNBOAT.
+        The type of vessel to create. By default this is a VType::GUNBOAT.
     */
-    Vessel::Vessel(VesselType vtype)
+    Vessel::Vessel(VType vtype)
         : vesselType_(vtype), damageLevel_(0)
     {
         damageLevel_ = getDamageLevel(true);
@@ -77,15 +77,15 @@ namespace Cylink
     */
     std::pair<int, int> Vessel::getDimensions() const
     {
-        return Vessel::getVesselDimensions(vesselType_);
+        return Vessel::vesselDimensions(vesselType_);
     }
 
     /**
      Obtain the type of the current vessel.
      @return 
-        The VesselType of the current vessel.
+        The VType of the current vessel.
     */
-    VesselType Vessel::getType() const
+    Vessel::VType Vessel::getType() const
     {
         return vesselType_;
     }
@@ -125,60 +125,60 @@ namespace Cylink
     /**
      Determine the arbitrarily set dimensions for various vessel types.
      @param vtype
-        A VesselType value for which to obtain dimensions.
+        The vessel type
     @return
         An std::pair value represented as pair<length:width>.
     */
-    std::pair<int, int> Vessel::getVesselDimensions(VesselType vtype)
+    std::pair<int, int> Vessel::vesselDimensions(VType vtype)
     {
-        std::pair<int, int> result(-1, -1);
-
         switch(vtype)
         {
-        case VesselType::GUNBOAT:
+        case VType::GUNBOAT:
             return std::make_pair(1,1);
 
-        case VesselType::CRUISER:
+        case VType::CRUISER:
             return std::make_pair(2, 1);
 
-        case VesselType::FRIGATE:
+        case VType::FRIGATE:
             return std::make_pair(3, 1);
 
-        case VesselType::DESTROYER:
+        case VType::DESTROYER:
             return std::make_pair(4, 2);
 
-        case VesselType::SUBMARINE:
+        case VType::SUBMARINE:
             return std::make_pair(6, 1);
 
-        case VesselType::CARRIER:
+        case VType::CARRIER:
             return std::make_pair(7, 2);
         }
-
-        return result;
+        return std::make_pair(-1, -1);
     }
 
     /**
-     Create a short 2-letter string or long descriptive string representing the specified VesselType.
+     Create a short 2-letter string or long descriptive string representing the specified vessel type.
      @param vt
         The type of the vessel for which a descriptive string is provided.
+     @param printLong
+        Flag to print either the long or short name of the vessel. 
+        Set to true to print the long name.
      @return 
-        A descriptive string for the VesselType.
+        A descriptive string for the vessel type.
     */
-    std::string Vessel::formatVessel(VesselType vt, bool printLong)
+    std::string Vessel::formatVessel(VType vtype, bool printLong)
     {
-        switch(vt)
+        switch(vtype)
         {
-        case VesselType::CARRIER:
+        case VType::CARRIER:
             return (printLong) ? "Carrier" : "CA";
-        case VesselType::CRUISER:
+        case VType::CRUISER:
             return (printLong) ? "Cruiser" : "CR";
-        case VesselType::DESTROYER:
+        case VType::DESTROYER:
             return (printLong) ? "Destroyer" : "DE";
-        case VesselType::FRIGATE:
+        case VType::FRIGATE:
             return (printLong) ? "Frigate" : "FR";
-        case VesselType::GUNBOAT:
+        case VType::GUNBOAT:
             return (printLong) ? "Gunboat" : "GB";
-        case VesselType::SUBMARINE:
+        case VType::SUBMARINE:
             return (printLong) ? "Submarine" : "SM";
         }
         return "";
@@ -208,9 +208,9 @@ namespace Cylink
      @return
         A reference to the output stream.
     */
-    std::ostream& operator<<(std::ostream& os, const VesselType& vt)
+    std::ostream& operator<<(std::ostream& os, const Vessel::VType& vtype)
     {
-        os<<Vessel::formatVessel(vt, true);
+        os<<Vessel::formatVessel(vtype, true);
         return os;
     }
 }
